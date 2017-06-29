@@ -1,0 +1,735 @@
+Zipper
+------
+
+This is the manual for "zipper", a program for combining range images
+into a polygonal mesh.  Zipper was specifically created to more fully
+use range images acquired from a Cyberware range scanner.  With
+appropriate file conversion, however, there is nothing preventing the
+use of zipper with range images taken with other scanners.
+
+The research results from the "zipper" program are described in the
+following article:
+
+  "Zippered Polygon Meshes from Range Images"
+  Greg Turk and Marc Levoy
+  Proceedings of SIGGRAPH '94
+  Pages 311-318
+
+Reading the above article will help your understanding of this manual.
+
+Contents
+--------
+
+  1. Introduction
+  2. Starting the Program
+  3. A Simple Example
+  4. An Advanced Example
+     4.1 Advanced Example: Alignment
+     4.2 Advanced Example: Merging
+     4.3 Advanced Example: Consensus Geometry
+  5. The Selection Window
+  6. The Button Window
+  7. Polygon Editing
+  8. Parallel Execution
+  9. List of Commands
+
+1. Introduction
+---------------
+
+The main drawback of using range images to capture a model is that
+almost no object is simple enough that a single range image will see
+the object's entire surface.  If you are taking a linear range image
+of an object, the range data will only capture one side of an object.
+If you are using a rotational scan, the top of the object will be
+poorly sampled.  For objects that have holes or large protrusions, one
+part of the object will very often obscure another part
+(self-occlusion).  For this reason, we want to take several scans of
+an object, align them with one another, and then combine them to give
+a single surface.  "Zipper" was written to perform the task of
+alignment and assembly.
+
+Zipper was written for running on an SGI workstation, and it uses the
+GL graphics library to display objects.  The current version of the
+binaries are compiled for SGI Irix 5.2. Zipper uses the Tk widget
+toolkit for buttons and the like.  It uses the Tcl command interpreter
+as a text front-end to interpret user commands.  Tk and Tcl that
+zipper use are version Tcl7.3 and Tk3.6. Both of them are written by
+John Ousterhout at UC Berkeley, and is freely distributed from a
+number of FTP sites.
+
+2. Starting the Program
+-----------------------
+
+Zipper can be invoked just by executing the file with no command line
+arguments:
+
+  zipper
+
+This will bring up three windows:
+
+  1) Object Window (drawn objects, initially black)
+  2) Button Window (many buttons)
+  3) Selection Window (object/light/world selection)
+
+In addition, you will see a prompt in the window from which you
+invoked zipper:
+
+  zipper>
+
+The normal way to use zipper is to type commands at this prompt and to
+click on buttons in the Button Window and the Selection Window.
+
+Zipper can also be invoked with a configuration file.  By default,
+configuration files end in ".conf".  A configuration file can actually
+contain any number of commands to the zipper program, although they
+usually just contain viewing information and commands to load a number
+of range images and to place them in particular positions in 3-D.  A
+configuration file is read in at the start of execution like so:
+
+  zipper -c <configuration-file-name>
+
+There is one other flag that can be provided on program start-up, and
+that is the no-graphics flag.  This flag says that no graphical user
+interface will appear.  This is useful for scripting zipper or for
+running zipper on a remote machine (presumably with more memory or
+processors than your local machine) which you don't want to be drawing
+objects at a very slow speed.  The no-graphics flag is "-g":
+
+  zipper -g
+
+The zipper program can be terminated in several ways: 1) Type "quit"
+at the prompt, 2) type Control-D at the prompt, or 3) press <ESC>
+while the cursor is in any of the graphics windows.
+
+The next few sections will familiarize you with using the command
+interface to zipper.  Although the selection and button windows
+provide a very useful interface to the commands you will execute,
+familiarity with the commands will help you to design scripts for
+aligning and zippering objects.
+
+3. A Simple Example
+-------------------
+
+Probably the easiest way to learn to use zipper is to go through a
+simple example.  Let us assume that you took two linear
+(translational) range images of an object, one from head-on and
+another from the side (90 degrees from the first).  Say these files
+are called "obj000.ply" and "obj090.ply", and they are both in the PLY
+range file format.
+
+After invoking zipper, we can read in the two files by typing these
+commands at the prompt:
+
+  bmesh obj000
+  bmesh obj090 90
+
+The first of these commands reads in the "obj000.ply" file, and sets
+the position of that object to the identity transformation (no
+position specified).  The second command reads in "obj090.ply" and
+says that this object is to be turned 90 degrees around the y-axis.
+Both objects are displayed in the Object Window, the first one in
+white and the second one in red.  Say that the two scans are slightly
+mis-aligned, even though we turned the second scan at 90 degrees.  We
+type the following two lines:
+
+  anchor obj000
+  align obj090
+
+The first command says that we wish to align other scans to obj000.
+The second command invokes the alignment proceedure on obj090, and
+runs several alignment iterations to try bringing it into alignment
+with obj000.  If this did not bring it into full alignment, we can
+re-type the "align obj090" command.  Alternately, we can just type
+"!!", which says re-execute the last text command given.  Each
+invocation of the alignment process prints out a set of about 10
+numbers.  These values are a rough measure of how close together the
+two scans are that are being aligned.  When these numbers stop
+changing significantly, the scans are aligned.  (This decision about
+when alignment is finished is obviously a task that should eventually
+be automated.  Future work!) Once we are visually satisfied with the
+alignment, we are ready to merge the two scans.  The following two
+commands will merge together the two meshes:
+
+  target obj000
+  merge obj090
+
+The first command says that obj000 is where we wish to merge all other
+scans into.  The second command merges obj090 into obj000.  The
+"merge" command takes some time to execute.  It will first eat away at
+the edges of the two meshes until they just touch.  It will then
+"zipper" together the two meshes into a single surface.  Read the
+article referenced earlier for details of the merge algorithm.
+
+We can now write out our new, zippered mesh into a file:
+
+  bpwrite obj000 zippered_object
+
+This command writes our zippered mesh into the PLY polygon file called
+"zippered_object.ply".  We can read in the file again (either in this session
+or when we re-start the program) by typing:
+
+  bmesh zippered_object
+
+The above steps cover many of the basics of using zipper.  We started the
+program, read in two range images, aligned them, merged the two meshes into a
+single polygon mesh, and finally wrote this mesh to a file.
+
+4. An Advanced Example
+----------------------
+
+Assume now that we wish to take several scans of a clay cat model and
+assemble them into a single polygon mesh.  In this example, we will
+make use of a rotational (cylindrical) range scan, as well as several
+linear scans.  We will use the cylindrical scan as a sort of anchor on
+which to align the other scans, but the rotational scan will NOT
+contribute to the final polygons of the model.  Our rotational scan is
+a file called "cat_rot".  Four linear scans, taken from the four
+compass points, are called "cat000.ply", "cat090.ply", "cat180.ply"
+and "cat270.ply".  In addition, we have one more scan, called
+"cat_top.ply" that was taken of the top of the cat model after we
+picked up the model and laid it on its side.
+
+4.1 Advanced Example: Alignment
+-------------------------------
+
+We begin by placing the following commands in the file "cat.conf":
+
+  bmesh cat_rot
+  bmesh cat000 0
+  bmesh cat090 90
+  bmesh cat180 180
+  bmesh cat270 270
+  bmesh cat_top
+
+Now we start zipper as follows:
+
+  zipper -c cat
+
+This reads in the file "cat.conf" and executes the commands that read
+in the six scans.  Notice that the first command is "mesh", not
+"bmesh".  This is because we used a Cyberware range file to store the
+rotational scan, and not a PLY range file.  PLY range files are
+usually preferable because the range data has not been re-sampled onto
+a regular grid, where Cyberware scans have been re-sampled.  This
+re-sampling process can create points mid-way between two surfaces,
+and such points can actually be very far away from the true surface.
+In our example, however, we will only be using the "cat_rot" range
+image for alignment, so the re-sampled depth values will not be an
+issue.
+
+The second through fifth command reads in the four PLY range scans
+that were taken from the four compass points.  The angle in degrees at
+the end of each line specifies how they are to be rotated about the
+y-axis.  This should roughly position them around the rotational scan.
+The final command reads in the "cat_top.ply" scan.  Note that we don't
+even bother trying to position this scan correctly.
+
+Now we are ready to begin alignment.  We type these commands:
+
+  anchor cat_rot
+  align cat000
+
+If this first alignment invocation doesn't do the trick, we type "!!"
+to re-invoke the last command.  Eventually we are satisfied with the
+alignment of cat000 to cat_rot, and we can align the other scans:
+
+  align cat090
+  align cat180
+  align cat270
+
+
+Alternatively, we can select "cat_rot" to be the anchor (Anc) mesh in
+the selection window, then select "cat000" to be the aligning (Aln)
+mesh, then hit "Align" in the button window (hit it as many times as
+needed), then select "cat090" to be the aligning mesh, and so on.
+
+We may have to repeat several of these commands to get full alignment.
+If we wished, we could have created a text file called "cat.align"
+with all of these commands:
+
+  anchor cat_rot
+  align cat000
+  align cat090
+  align cat180
+  align cat270
+
+Then we can execute all of them by typing "source cat.align".  This is
+the way to align objects "off-line".
+
+Finally, we want to align the top of the cat.  Go to the Selection
+Window and click on the blank diamond in the "Mv" column of the line
+that reads "cat_top".  The diamond should turn green, and this means
+that mouse dragging in the Object Window will move the scan called
+"cat_top".  The buttons have the following actions:
+
+  Left   - translate left/right and up/down
+  Middle - rotate (a virtual trackball)
+  Right  - translate forward/back
+
+These same three actions also apply when you are in "world" mode.
+Clicking on the diamond to the right of the "World" button in the
+Selection Window put us in world mode.  Then dragging the mouse in the
+Object Window moves ALL of the scans, not just one.  Go back and
+re-select "cat_top", and use the mouse to drag it into rough alignment
+with all of the other scans.  Once it is crudely aligned, invoke the
+automatic alignment by typing:
+
+  align cat_top
+
+We will probably have to invoke this several times because our hand
+alignment wasn't very precise to begin with.
+
+Up until this point, we have been working (by default) at the lowest
+sampling rate of the range scans.  You may have noticed that the
+meshes for the different range scans are very simple.  The four
+buttons at the far right of the Button Window, labeled "Mesh 1"
+through "Mesh 4", guide the resolution of the meshes that we work
+with.  By default, the program starts by using the crudest mesh level,
+Mesh 4.  This means that the polygon meshes displayed in the Object
+Window are created by using every 8th sample point (both horizontally
+and vertically) from their respective range images.  Mesh 3 uses every
+4th point, Mesh 2 uses every other point, and Mesh 1 uses all the
+range points.  Let us switch to a slightly higher mesh level by
+pressing the "Mesh 3" button.  After a short time, each of the
+displayed meshes now have slightly more detail.  We need to align
+these meshes at the new detail level, since we have more geometry with
+which to align:
+
+  align cat000
+  align cat090
+  align cat180
+  align cat270
+  align cat_top
+
+In practice, most users align a single scan at a time at each of the
+different mesh levels up to the one they want as final output.  The
+way to do this is:
+
+  mesh_resolution 4  (the command-line form of pressing "Mesh 4")
+  align cat000
+  ...  (possible repetition of alignment command)
+  mesh_resolution 3
+  align cat000
+  ...
+  mesh_resolution 2
+  align cat000
+  ...
+  mesh_resolution 1
+  align cat000
+  ...
+
+In the following example, we will press the "Mesh 3" button and carry
+out all the operations at mesh level 3.
+
+To speed up the alignment process some, we can type the following
+command:
+
+  fast_ops on
+
+This will cause the align command (and the merge command, too) to only
+display the final position of the meshes.  Drawing the intermediate
+positions during alignment takes a little bit of time.  We can turn
+this drawing back on by:
+
+  fast_ops off
+
+At any point in the alignment process, we may wish to save the current
+posisions of all the scans.  We can see the positions by typing:
+
+  print
+
+This prints all the positions of the scans, as well as the camera
+position.  A position of a scan is seven numbers, the first three are
+translation and the last four are quaternion rotation.  We can save
+this information to a file by typing:
+
+  print cat
+
+This will save the current positions of all scans in the file
+"cat.conf".  We can re-start the zipper program with these new
+positions (should we have a need to quit and re-start) by:
+
+  zipper -c cat
+
+There is another reason to save away the current positions of the
+meshes-- a reason that will come into play later.
+
+4.2 Advanced Example: Merging
+-----------------------------
+
+Once we have aligned the scans of the cat, we are ready to merge them
+together into a single polygon mesh.  We will do so by successively
+merging each of the linear scans into the first such scan, called
+"cat000".  Here are the commands to perform the merge:
+
+  target cat000
+  merge cat090
+  merge cat180
+  merge cat270
+  merge cat_top
+
+Alternatively, we can select "cat000" to be the target (Tgt) mesh in
+the selection window, then select "cat090" to be the merging (Mrg)
+mesh, then hit "Eat Edges" and "Merge" in the button window, then
+select "cat180" to be the merging (Mrg) mesh, and so on.  
+
+With each merge step, the mesh in "cat000" incorporates the new parts
+of the model that are contributed by the other scans.  By default, the
+merge operation displays the process of eating away at the mesh
+boundaries.  Notice that all of the above commands may be stored in a
+text file, and then read in by the "source" command.  In this way we
+can make merging an off-line process, without the need for a user to
+type the commands and wait for them to execute.
+
+The merging process can be sped up slightly by typing a command before
+the merge process that tells the program NOT to display all the
+intermediate forms during mesh eating:
+
+  fast_ops on
+
+This is the same command we used earlier to speed up the alignment
+process.  The default behavior can be restored by the command:
+
+  fast_ops off
+
+Once all the merge steps are completed, we can save the final mesh to
+a file called "cat_zippered.ply" by the command:
+
+  bpwrite cat000 cat_zippered
+
+It is worth noting that we could have used the rotational mesh
+("cat_rot") in the above zippering example but that it is usually not
+a good idea.  Rotational range scans often have "poles", or places
+where a very large number of triangles are squeezed into a small part
+of 3-space.  Usually the triangles near the pole will also be long and
+thin, probably not the best shape for triangles in our final mesh.
+
+4.3 Advanced Example: Consensus Geometry
+----------------------------------------
+
+After merging, there is one final step that can be performed that
+usually results in slightly higher quality meshes.  This operation is
+known as "consensus geometry", and you can find out technical details
+about it by reading the zippering article.  The basic idea is to alter
+the zippered mesh by moving each mesh vertex to an average position of
+nearby range points taken from the original mesh data.  This means
+that the final mesh positions will not be taken from one range scan
+each, but rather will be a "consensus" average from all of the
+currently loaded scans.  This usually smooths out some of the noise on
+the surface, and can make smaller any noticable rough spots of the
+mesh where zippering occured.
+
+To compute the consensus geometry, we must have the zippered mesh read into
+the program, and must furthermore have all the original range images that
+contributed to the zippered mesh.  We need to position these meshes in exactly
+the same way they were situated during the merge step.  We can do this by
+using the seven number description of their position that we saved when we
+executed the command "print cat".  We can simply copy the "cat.conf" file
+resulting from this command and modify it to produce the consensus geometry.
+In this way the consensus step can be an entirely off-line process, just as we
+can do with the merging process.  Here are the commands to compute consensus
+geometry:
+
+  bmesh cat_zippered
+  bmesh cat000  <position-parameters>
+  bmesh cat090  <position-parameters>
+  bmesh cat180  <position-parameters>
+  bmesh cat270  <position-parameters>
+  bmesh cat_top <position-parameters>
+  consensus cat_zippered 3
+
+The above "consensus" command takes a while to execute.  What is specified in
+the command is the name of the mesh to be operated on, "cat_zippered", and the
+mesh level of that mesh, which in our case is level 3.  As one might expect,
+the consensus step would take a good deal longer to execute if we were using
+mesh level 1, the most detailed level.
+
+After the consensus step is complete, we can save the final mesh by the
+command:
+
+  bpwrite cat_zippered cat_final
+
+This saves the mesh currently called "cat_zippered" into the PLY polygon file
+called "cat_final.ply".
+
+Note that when we perform consensus geometry, we want to make sure that
+all the range scans that contributed to the zippered mesh are loaded
+and in the same position as when they were used.  Meshes that are not
+loaded will not contribute to the average position that consensus
+geometry computes.  By the same token, be sure NOT to have range
+scans loaded during consensus geometry that never contributed to the
+zippered mesh.
+
+We are now done with the advanced zippering example.
+
+5. The Selection Window
+-----------------------
+
+The Selection Window is used to specify which objects are to be drawn in the
+Object Window and to say what mouse actions have what effect.  The last two
+lines in the Selection Window are always the same:
+
+  light
+  whole object
+
+Each of these lines has a diamond to their right.  Clicking in the "whole
+object" diamond says that mouse dragging in the Object Window will move all of
+the objects together.  The mouse buttons are used as follows:
+
+  Left   - translate left/right and up/down
+  Middle - rotate (a virtual trackball)
+  Right  - translate forward/back
+
+Clicking on the "light" diamond means that the left mouse button drags around
+the virtual light that determines the shading of the objects.  Finally, you
+may click on the diamond that is to the far right of any of the named meshes
+that the program currently has in memory.  Then the three buttons carry out
+the same movements as in "whole object" mode except that only the one mesh is
+moved.  We did this in the advanced example to crudely align the cat_top mesh
+to the others.  Notice that only one of the diamonds may be lit at any one
+time.
+
+An array of buttons sits next to each named mesh.  When you have a
+group of meshes loaded, the buttons form a matrix with column titles
+printed above.  These columns correspond to:
+
+Vis - make the mesh visible
+Mv - the next 3D mouse interactions will move this mesh
+Anc - make this mesh the anchor mesh for the next alignment
+Aln - make this mesh the next mesh to be aligned against the anchor
+Tgt - make this mesh the target mesh
+Mrg - make this mesh the next mesh to merge into the target
+
+Toggling visibility is useful to avoid rendering meshes that you are
+not currently working on.
+
+
+6. The Button Window
+--------------------
+
+The Button Window contains a number of buttons that control how the meshes
+appear.  The five buttons on the far left are as follows:
+
+  Update       - toggle whether or not to update the 3D rendering at
+                 every step
+  Orthographic - toggle between orthographic and perspective rendering
+  Singlebuffer - toggle between single-buffering and double-buffering
+                 of the 3D graphics
+  Shiny        - toggle between matte and shiny surface material appearance
+
+The five buttons in the next column do the following:
+
+  Polygons   - polygonal vs. line drawing
+  Smooth     - smooth vs. faceted shading
+  FalseColor - different colors for each mesh, or white for every mesh
+  TrueColor  - color taken from range file (not fully implemented)
+
+The five buttons in the next column do the following:
+
+  Confidence - color of mesh measures confidence of that depth position
+  Normals    - show surface normals as vectors
+  Bounds     - highlight the edges on the boundary of the meshes
+  Refine     - use low resolution mesh when displaying?
+
+"Confidence" is a measure of how sure we are that a given position on the mesh
+is an accurate depth.  Confidence is shown as color on a mesh, with red
+meaning high confidence and blue as low confidence.
+
+The "refine" button says whether or not to swap to a low-resolution model
+(Mesh 4) when moving objects around.  It has no effect if the lowest
+resolution mesh is the one currently selected.
+
+Next we come to the Match buttons.  They do the following:
+
+  Edit      - bring up the polygon editing window
+  Undo      - undo movement of a mesh (either from mouse motion or alignment)
+  Redo      - redo an undo
+
+We will discuss polygon editing later.  The "undo" and "redo" buttons are for
+undo/redo of any motion of meshes, whether the motion was from mouse movements
+or from an alignment process.
+
+The next column of buttons are primarily for giving demonstrations.  Three of
+the buttons act ONLY upon the first two meshes listed in the Selection Window.
+The are (currently) not useful in general.
+
+  Align     - alignment of meshes by rotation and translation (demos only)
+  StopAlign - stop the alignment
+  Eat Edges - eat away at overlapping parts of two meshes (demos only)
+  Merge     - merge two meshes that just overlap (demos only)
+
+The "StopAlign" button is useful whenever we wish to stop the alignment
+process prematurely.  Pressing this button will stop after the current
+alignment iteration.
+
+7. Polygon Editing
+------------------
+
+Pressing the "Edit" button in the Button Window brings up a small window
+devoted entirely to making small changes to the geometry of a mesh.  The
+editing window can be closed by pressing on the "Edit" button again, or by
+pressing on the "Dismiss" button at the bottom of the edit window.
+
+The edit window has seven radio buttons that let you be in one of seven
+editing modes.  These modes are:
+
+  Null Mode
+  Delete Triangle
+  Delete Vertex
+  Fill Hole
+  Fill Better
+  Make Triangle
+  Delete Box
+
+When in Null Mode the mouse buttons work as they always do: rotating and
+translating the on-screen object.  When one of the six other modes are
+selected, the left mouse button is used to pick an element on the model.
+Picked objects are lit up in green.  Once an appropriate object is selected,
+pressing either the middle mouse button or the "Execute Edit" button will
+attempt to execute the current editing function.  Below are descriptions of
+each of these other modes:
+
+  Delete Triangle:
+
+  When the cursor is positioned over a polygon, pressing the left mouse button
+  will highlight the polygon in green.  When the middle mouse button is
+  pressed, this polygon will be deleted.
+
+  Delete Vertex:
+
+  When the left mouse button is pressed DIRECTLY over a vertex of the model, a
+  small green circle will appear on top of the vertex.  When the middle mouse
+  button is pressed, this vertex is removed from the model and the surrounding
+  polygons are adjusted to keep the surface connected in this area.  A vertex
+  cannot be removed if it is on the boundary of the mesh.
+
+  Fill Hole:
+
+  The boundary of a hole in the mesh will be highlighted when the left mouse
+  button is pressed directly on the edge of a mesh hole.  When the middle
+  mouse button is pressed, the program attempts to pave over the hole with
+  triangles by connecting the vertices that surround the hole.
+
+  Fill Better:
+
+  This is a different way to fill in a hole in the mesh.  It operates just as
+  does the other hole filling operation, except that new vertices will be
+  introduced into he mesh in a way that attempts to preserve the natural
+  triangle size of the mesh.  It is better to use this version of hole filling
+  for larger holes.
+
+  Make Triangle:
+
+  Three vertices must be selected by clicking on the with the left mouse
+  button.  Once three vertices are selected, pressing the "Make Triangle"
+  button will try to make a triangle with the three vertices.  The program
+  requires that at least two of these vertices already be shared by some other
+  triangle so that it knows how to orient the new triangle.  In some cases, no
+  triangle will be created because there is contradictory orientation
+  information.
+
+  Delete Box:
+
+  This is for deleting a large number of vertices and their associated
+  triangles.  The mouse is used to create a box, inside of which all the
+  vertices will be deleted.  Click and hold down the left mouse button at the
+  upper left corner of the box, drag the mouse to the lower right of the
+  desired region, and then release the button.  Pressing the middle mouse
+  button will now cause all the vertices inside the box to be deleted.  Be
+  careful about accidentally deleting polygons that are not visible because
+  they are facing away from the viewer.  You can avoid this by turning off
+  polygon drawing (so edges are drawn instead) and by turning off backface
+  rejection by the command "cull off".  This makes all edges in the model
+  visible, whether the corresponding triangles are front-facing or not.
+
+8. Parallel Execution
+---------------------
+
+Some high-end SGI's contain more than one processor.  Zipper can make use of
+more than one processor during alignment and during the part of merging that
+eats away at mesh edges.  If the SGI we are running on contains four
+processors, we can make use of them by the command:
+
+  parallel_max 4
+
+This says that zipper will spawn off four processes during alignment
+operations and during edge eating.  Although this usually speeds up those
+operations considerably, there are cases where asking to use all the
+processors will actually slow the operations down.  This will be the case when
+one or more CPU intensive jobs are running on the same machine.  In such a
+case it is a good idea to see how many CPU intensive jobs are active by using
+the program "gr_osview".  Say that two of the CPU's are already getting heavy
+use on our four processor machine.  We would use the two remaining processors
+by typing the following command:
+
+  parallel_max 2
+
+This means we will not be caught in the trap of waiting for one or more of the
+very sluggish processors to finish a task.
+
+9. List of Commands
+-------------------
+
+Below is a list of commands that can be typed in at the zipper prompt.  They
+are arranged very roughly by theme.
+
+
+quit - quit the program
+help or ?   - print help about commands
+help <word> - print any help line that contains a given word
+
+anchor <mesh> - specify the anchor mesh for alignment
+next_align <mesh> - specify the next scan to align
+align  [<mesh>] - align a mesh with the current anchor mesh
+align_step <mesh> - align a mesh with the current anchor mesh
+target <mesh> - specify the target mesh to merge into
+next_merge <mesh> - specify the next scan to eat/merge
+merge  [<mesh>] - merge a mesh into the target mesh
+consensus <mesh> <res> - compute consensus geometry at a given resolution
+eat_edges  <mesh>  - eat away edges of one mesh (first part of merge)
+only_merge <mesh>  - perform zippering only (second part of merge)
+fast_ops <off/on>  - use faster operations? (doesn't draw much)
+parallel_max <num> - use up to this many processors to do eat & align
+
+undo - undo last movement operation
+redo - redo last undo
+beep - make a beep sound
+mesh_resolution <mesh> <res> - set the mesh resolution (1, 2, 3, or 4)
+remove_mesh <mesh> - remove a mesh from memory
+
+bmesh    <file> [angle]  - read in a binary mesh file
+mesh     <file> [angle]  - read in Cyberware mesh file (not used much)
+bpolygon <file> [angle]  - read in a PLY polygon file
+bpwrite  <mesh> <file>   - write a mesh to a file
+color_write <off/on>     - flag: write colors to file?
+intensity_write <off/on> - flag: write intensity to file?
+normals_write <off/on>   - flag: write normals & consensus tags to file?
+
+rename_mesh <old-mesh-name> <new-mesh-name> -  renames a mesh
+remove_mesh <mesh> -  removes a mesh
+
+print         - print out positions of meshes
+print <file>  - write out positions of meshes to a file
+mprint        - print out matrices of meshes
+mprint <file> - write out matrices of meshes to a file
+source <file> - read in lines of a text file and execute them
+
+translate <mesh> <x> <y> <z> - translate a mesh
+xrotate <mesh> <angle> - rotate a mesh by some degrees around the x-axis
+yrotate <mesh> <angle> - rotate a mesh by some degrees around the y-axis
+zrotate <mesh> <angle> - rotate a mesh by some degrees around the z-axis
+qrotate <mesh> <q0> <q1> <q2> <q3> - rotate a mesh using a quaternion
+speed <num>   - speed of object motion due to mouse (default = 1)
+cull <off/on> - turn off/on backface rejection in line mode (default is on)
+reset_view    - reset the view position
+axes <off/on> - turn off or on drawing of axes
+camera <cam_params> - set the camera position
+background <r> <g> <b> - set the background color
+singlebuffer <off/on> - choose between single- and double-buffering
+orthographic <off/on> - choose between orthographic and perspective viewing
+
+End.
+
+Greg Turk
+August 1994
+

@@ -1,0 +1,104 @@
+An incomplete roadmap to the zipper source.  Work in progress.
+
+
+clip.c
+------
+Clips one mesh against another after thickening the boundaries.
+
+
+close_match.c
+-------------
+Performs iterative Besl matching and rigid transformation, using the
+matches obtained from match_parallel.c.  May drag other meshes along
+(haven't tried this yet).
+
+
+closest.c
+---------
+Computes the best non-rigid transformation between two matched sets of
+points.
+
+
+consensus.c
+-----------
+Performs consensus step so that all meshes contribute to final mesh.
+
+
+cursor.c
+--------
+Handles the cursor shapes.
+
+
+cyfile.c
+--------
+File I/O for Cyberware format range images.
+
+
+draw.c
+------
+Handles all drawing of meshes into a GL window.
+
+
+edges.c
+-------
+Finds all edges of a mesh and consolidates them into edge loops.
+
+
+event.c
+-------
+Event handler.
+
+
+fill.c
+------
+Fills edge loops (holes) in a mesh.
+
+
+help.c
+------
+Simple online help.
+
+
+intersect.c
+-----------
+???
+
+
+invert.c
+--------
+Performs inversion of matrices
+
+
+match_parallel.c
+----------------
+Finds best pairwise matches of one mesh against another.  Results are
+used in Besl alignmentin close_match.c.
+
+
+matrix.c
+--------
+Matrix operations.
+
+
+mesh.c
+------
+Turns a range grid into a mesh at the desired resolution level.
+
+
+myalloc.c
+---------
+Does memory allocation.
+
+
+meshops.c
+----------
+Does hole filling, bow fixing, sliver triangle removal, vertex
+removal...
+
+
+polyfile.c
+----------
+Old polygon format.  Also, a routine for guessing mesh resolution.
+
+
+

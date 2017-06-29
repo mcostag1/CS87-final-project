@@ -1,0 +1,28 @@
+3D Scan Merging - Sequential and Parallel
+Martina Costagliola and Simon Bloch
+CS87 Final Project
+5/12/2016
+
+README.final: 
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+In order to run our sequential version, you need to run ./s_zipper with 2 infiles and 1 outfiles
+sample Sequential compilation and execution procedure:
+
+
+make
+./s_zipper lib/bunnies/bun000.ply lib/bunnies/bun045.ply s_out000.ply
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+In order to run our sequential version, you need to run ./p_zipper with 2 infiles and 1 outfile
+sample Parallel compilation and execution procedure:
+
+
+make
+./p_zipper lib/bunnies/bun000.ply lib/bunnies/bun045.ply p_out000.ply
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

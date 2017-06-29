@@ -1,0 +1,162 @@
+bun000 + bun045
+p_zipper: cannot open file lib/bunnies/bun000.py
+Exiting to system.Command exited with non-zero status 1
+0.00user 0.00system 0:00.00elapsed 50%CPU (0avgtext+0avgdata 792maxresident)k
+0inputs+0outputs (0major+262minor)pagefaults 0swaps
+p_zipper: cannot open file lib/bunnies/bun000.py
+Exiting to system.Command exited with non-zero status 1
+0.00user 0.00system 0:00.00elapsed 100%CPU (0avgtext+0avgdata 796maxresident)k
+0inputs+0outputs (0major+263minor)pagefaults 0swaps
+p_zipper: cannot open file lib/bunnies/bun000.py
+Exiting to system.Command exited with non-zero status 1
+0.00user 0.00system 0:00.00elapsed 100%CPU (0avgtext+0avgdata 788maxresident)k
+0inputs+0outputs (0major+262minor)pagefaults 0swaps
+p_zipper: cannot open file lib/bunnies/bun000.py
+Exiting to system.Command exited with non-zero status 1
+0.00user 0.00system 0:00.00elapsed 0%CPU (0avgtext+0avgdata 792maxresident)k
+0inputs+0outputs (0major+262minor)pagefaults 0swaps
+p_zipper: cannot open file lib/bunnies/bun000.py
+Exiting to system.Command exited with non-zero status 1
+0.00user 0.00system 0:00.00elapsed 0%CPU (0avgtext+0avgdata 792maxresident)k
+0inputs+0outputs (0major+262minor)pagefaults 0swaps
+p_zipper: cannot open file lib/bunnies/bun000.py
+Exiting to system.Command exited with non-zero status 1
+0.00user 0.00system 0:00.00elapsed 0%CPU (0avgtext+0avgdata 792maxresident)k
+0inputs+0outputs (0major+262minor)pagefaults 0swaps
+p_zipper: cannot open file lib/bunnies/bun000.py
+Exiting to system.Command exited with non-zero status 1
+0.00user 0.00system 0:00.00elapsed 0%CPU (0avgtext+0avgdata 788maxresident)k
+0inputs+0outputs (0major+262minor)pagefaults 0swaps
+p_zipper: cannot open file lib/bunnies/bun000.py
+Exiting to system.Command exited with non-zero status 1
+0.00user 0.00system 0:00.00elapsed 0%CPU (0avgtext+0avgdata 792maxresident)k
+0inputs+0outputs (0major+263minor)pagefaults 0swaps
+p_zipper: cannot open file lib/bunnies/bun000.py
+Exiting to system.Command exited with non-zero status 1
+0.00user 0.00system 0:00.00elapsed 100%CPU (0avgtext+0avgdata 792maxresident)k
+0inputs+0outputs (0major+264minor)pagefaults 0swaps
+p_zipper: cannot open file lib/bunnies/bun000.py
+Exiting to system.Command exited with non-zero status 1
+0.00user 0.00system 0:00.00elapsed 100%CPU (0avgtext+0avgdata 792maxresident)k
+0inputs+0outputs (0major+262minor)pagefaults 0swaps
+p_zipper: cannot open file lib/bunnies/bun000.py
+Exiting to system.Command exited with non-zero status 1
+0.00user 0.00system 0:00.00elapsed 100%CPU (0avgtext+0avgdata 796maxresident)k
+0inputs+0outputs (0major+263minor)pagefaults 0swaps
+p_zipper: cannot open file lib/bunnies/bun000.py
+Exiting to system.Command exited with non-zero status 1
+0.00user 0.00system 0:00.00elapsed 100%CPU (0avgtext+0avgdata 796maxresident)k
+0inputs+0outputs (0major+263minor)pagefaults 0swaps
+p_zipper: cannot open file lib/bunnies/bun000.py
+Exiting to system.Command exited with non-zero status 1
+0.00user 0.00system 0:00.00elapsed 100%CPU (0avgtext+0avgdata 792maxresident)k
+0inputs+0outputs (0major+263minor)pagefaults 0swaps
+p_zipper: cannot open file lib/bunnies/bun000.py
+Exiting to system.Command exited with non-zero status 1
+0.00user 0.00system 0:00.00elapsed 100%CPU (0avgtext+0avgdata 796maxresident)k
+0inputs+0outputs (0major+263minor)pagefaults 0swaps
+p_zipper: cannot open file lib/bunnies/bun000.py
+Exiting to system.Command exited with non-zero status 1
+0.00user 0.00system 0:00.00elapsed 100%CPU (0avgtext+0avgdata 792maxresident)k
+0inputs+0outputs (0major+262minor)pagefaults 0swaps
+p_zipper: cannot open file lib/bunnies/bun000.py
+Exiting to system.Command exited with non-zero status 1
+0.00user 0.00system 0:00.00elapsed 100%CPU (0avgtext+0avgdata 792maxresident)k
+0inputs+0outputs (0major+262minor)pagefaults 0swaps
+p_zipper: cannot open file lib/bunnies/bun000.py
+Exiting to system.Command exited with non-zero status 1
+0.00user 0.00system 0:00.00elapsed 100%CPU (0avgtext+0avgdata 792maxresident)k
+0inputs+0outputs (0major+262minor)pagefaults 0swaps
+p_zipper: cannot open file lib/bunnies/bun000.py
+Exiting to system.Command exited with non-zero status 1
+0.00user 0.00system 0:00.00elapsed 100%CPU (0avgtext+0avgdata 792maxresident)k
+0inputs+0outputs (0major+262minor)pagefaults 0swaps
+p_zipper: cannot open file lib/bunnies/bun000.py
+Exiting to system.Command exited with non-zero status 1
+0.00user 0.00system 0:00.00elapsed 100%CPU (0avgtext+0avgdata 796maxresident)k
+0inputs+0outputs (0major+263minor)pagefaults 0swaps
+p_zipper: cannot open file lib/bunnies/bun000.py
+Exiting to system.Command exited with non-zero status 1
+0.00user 0.00system 0:00.00elapsed 100%CPU (0avgtext+0avgdata 796maxresident)k
+0inputs+0outputs (0major+263minor)pagefaults 0swaps
+bun045 + bun090
+p_zipper: cannot open file lib/bunnies/bun045.py
+Exiting to system.Command exited with non-zero status 1
+0.00user 0.00system 0:00.00elapsed 100%CPU (0avgtext+0avgdata 792maxresident)k
+0inputs+0outputs (0major+262minor)pagefaults 0swaps
+p_zipper: cannot open file lib/bunnies/bun045.py
+Exiting to system.Command exited with non-zero status 1
+0.00user 0.00system 0:00.00elapsed 100%CPU (0avgtext+0avgdata 796maxresident)k
+0inputs+0outputs (0major+264minor)pagefaults 0swaps
+p_zipper: cannot open file lib/bunnies/bun045.py
+Exiting to system.Command exited with non-zero status 1
+0.00user 0.00system 0:00.00elapsed 100%CPU (0avgtext+0avgdata 788maxresident)k
+0inputs+0outputs (0major+263minor)pagefaults 0swaps
+p_zipper: cannot open file lib/bunnies/bun045.py
+Exiting to system.Command exited with non-zero status 1
+0.00user 0.00system 0:00.00elapsed 100%CPU (0avgtext+0avgdata 788maxresident)k
+0inputs+0outputs (0major+263minor)pagefaults 0swaps
+p_zipper: cannot open file lib/bunnies/bun045.py
+Exiting to system.Command exited with non-zero status 1
+0.00user 0.00system 0:00.00elapsed 100%CPU (0avgtext+0avgdata 792maxresident)k
+0inputs+0outputs (0major+263minor)pagefaults 0swaps
+p_zipper: cannot open file lib/bunnies/bun045.py
+Exiting to system.Command exited with non-zero status 1
+0.00user 0.00system 0:00.00elapsed 100%CPU (0avgtext+0avgdata 792maxresident)k
+0inputs+0outputs (0major+263minor)pagefaults 0swaps
+p_zipper: cannot open file lib/bunnies/bun045.py
+Exiting to system.Command exited with non-zero status 1
+0.00user 0.00system 0:00.00elapsed 100%CPU (0avgtext+0avgdata 796maxresident)k
+0inputs+0outputs (0major+263minor)pagefaults 0swaps
+p_zipper: cannot open file lib/bunnies/bun045.py
+Exiting to system.Command exited with non-zero status 1
+0.00user 0.00system 0:00.00elapsed 100%CPU (0avgtext+0avgdata 792maxresident)k
+0inputs+0outputs (0major+262minor)pagefaults 0swaps
+p_zipper: cannot open file lib/bunnies/bun045.py
+Exiting to system.Command exited with non-zero status 1
+0.00user 0.00system 0:00.00elapsed 100%CPU (0avgtext+0avgdata 788maxresident)k
+0inputs+0outputs (0major+262minor)pagefaults 0swaps
+p_zipper: cannot open file lib/bunnies/bun045.py
+Exiting to system.Command exited with non-zero status 1
+0.00user 0.00system 0:00.00elapsed 100%CPU (0avgtext+0avgdata 788maxresident)k
+0inputs+0outputs (0major+262minor)pagefaults 0swaps
+p_zipper: cannot open file lib/bunnies/bun045.py
+Exiting to system.Command exited with non-zero status 1
+0.00user 0.00system 0:00.00elapsed 100%CPU (0avgtext+0avgdata 792maxresident)k
+0inputs+0outputs (0major+262minor)pagefaults 0swaps
+p_zipper: cannot open file lib/bunnies/bun045.py
+Exiting to system.Command exited with non-zero status 1
+0.00user 0.00system 0:00.00elapsed 100%CPU (0avgtext+0avgdata 792maxresident)k
+0inputs+0outputs (0major+263minor)pagefaults 0swaps
+p_zipper: cannot open file lib/bunnies/bun045.py
+Exiting to system.Command exited with non-zero status 1
+0.00user 0.00system 0:00.00elapsed 100%CPU (0avgtext+0avgdata 792maxresident)k
+0inputs+0outputs (0major+262minor)pagefaults 0swaps
+p_zipper: cannot open file lib/bunnies/bun045.py
+Exiting to system.Command exited with non-zero status 1
+0.00user 0.00system 0:00.00elapsed 100%CPU (0avgtext+0avgdata 792maxresident)k
+0inputs+0outputs (0major+262minor)pagefaults 0swaps
+p_zipper: cannot open file lib/bunnies/bun045.py
+Exiting to system.Command exited with non-zero status 1
+0.00user 0.00system 0:00.00elapsed 100%CPU (0avgtext+0avgdata 792maxresident)k
+0inputs+0outputs (0major+262minor)pagefaults 0swaps
+p_zipper: cannot open file lib/bunnies/bun045.py
+Exiting to system.Command exited with non-zero status 1
+0.00user 0.00system 0:00.00elapsed 100%CPU (0avgtext+0avgdata 788maxresident)k
+0inputs+0outputs (0major+262minor)pagefaults 0swaps
+p_zipper: cannot open file lib/bunnies/bun045.py
+Exiting to system.Command exited with non-zero status 1
+0.00user 0.00system 0:00.00elapsed 100%CPU (0avgtext+0avgdata 792maxresident)k
+0inputs+8outputs (0major+262minor)pagefaults 0swaps
+p_zipper: cannot open file lib/bunnies/bun045.py
+Exiting to system.Command exited with non-zero status 1
+0.00user 0.00system 0:00.00elapsed 100%CPU (0avgtext+0avgdata 796maxresident)k
+0inputs+0outputs (0major+263minor)pagefaults 0swaps
+p_zipper: cannot open file lib/bunnies/bun045.py
+Exiting to system.Command exited with non-zero status 1
+0.00user 0.00system 0:00.00elapsed 100%CPU (0avgtext+0avgdata 792maxresident)k
+0inputs+0outputs (0major+262minor)pagefaults 0swaps
+p_zipper: cannot open file lib/bunnies/bun045.py
+Exiting to system.Command exited with non-zero status 1
+0.00user 0.00system 0:00.00elapsed 100%CPU (0avgtext+0avgdata 792maxresident)k
+0inputs+0outputs (0major+262minor)pagefaults 0swaps

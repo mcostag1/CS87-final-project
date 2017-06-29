@@ -1,0 +1,79 @@
+Changes to Zipper
+-----------------
+We have made some changes to the zipper program since the release of
+version 1.0.  See the CHANGES file for details.
+
+
+Zipper Compilation and Execution
+--------------------------------
+
+This file documents compiling and running "zipper", a program for
+combining multiple range images to form a polygon model.
+
+A tutorial for zipper can be found in Zipper.doc.
+
+Execution
+---------
+
+Before you can execute the zipper program you will need to set the
+environment variable to use Tcl and Tk.  We will assume that you have 
+placed all of the zipper files in a directory with a full path of 
+/usr/people/yourname/zipper.  Then this environment variable need to be set:
+
+  setenv ZIPPER_DIR /usr/people/yourname/zipper
+
+If you do not have a Tcl/Tk environment installed, then you will have
+to set two more environment variables:
+
+  setenv TCL_LIBRARY /usr/people/yourname/zipper/tcl_and_tk
+  setenv TK_LIBRARY /usr/people/yourname/zipper/tcl_and_tk
+
+After completing the above, zipper should execute without trouble.
+
+Compilation
+-----------
+
+Zipper was written to run on Silicon Graphics workstations.  It makes use of
+the old-style GL graphics library, so it currently can ONLY run on SGI's.
+Eventually somebody should port it to Open GL, but don't hold your breath.
+Zipper also makes use of the Tcl command interpreter and the Tk widget
+toolkit, both written by John Ousterhout of Berkeley.  You will need to
+install Tcl and Tk on your machine in order to compile zipper from scratch.
+
+You probably do not need to compile zipper from scratch if you have an
+ordinary SGI workstation.  The source is provided primarily for those people
+wanting to modify the program.  If you just want to run the program as-is, the
+directions above under "Execution" should be enough.
+
+The particular versions of Tcl and Tk that zipper uses are Tcl 7.3 and Tk 3.6.
+These releases are available from several anonymous FTP sites, including:
+
+  ftp.cs.berkeley.edu in /ucb/tcl
+  harbor.ecn.purdue.edu in /pub/tcl
+
+You can also find information about it on the World Wide Web:
+
+  http://www.sco.com/IXI/of_interest/tcl/Tcl.html
+  http://web.cs.ualberta.ca/~wade/Auto/Tcl.html
+
+Once you have installed Tk and Tcl, you will need to edit "makefile" in your
+zipper source directory and set the variables TCL_LIB and TCL_INCLUDE to the
+appropriate directories on your machine.
+
+In addition, you may need to recompile the provided libraries (for
+example, if you are using IRIX 4.x or less).  The source for the ply
+library (libply.a) for reading and writing ply polygon files can be
+obtained via anonymous FTP from:
+
+   graphics.stanford.edu in pub/zippack
+
+The source for the Meschach Library (libmeschach.a) which provides
+zipper with the numerical methods necessary for alignment can be
+obtained from:
+
+   netlib.org in c/meschach
+
+
+After the above steps are taken, zipper should compile straight from the
+makefile.
+

@@ -1,0 +1,453 @@
+		  Changes to Zipper (v1.12 -> v1.14)
+
+	                   Brian Curless
+			Stanford University
+			  September 14, 1995
+
+
+Several bug reports turned up a NULL-pointer de-reference that led to
+crashes.  This bug has been fixed.
+
+
+
+
+		  Changes to Zipper (v1.11 -> v1.12)
+
+	         Brian Curless and Afra Zomorodian
+			Stanford University
+			  August 28, 1995
+
+
+Here are a list of mostly minor changes to zipper.  One of the bug
+fixes concerns the libply.a file, so be sure to use the new libply.a
+or recompile it with the new source files.
+
+
+New commands
+------------
+
+The "absorb_transform <mesh-name>" command will transform a mesh's
+vertices by its current transformation and reset the transformation to
+the identity transform, thus "absorbing" the transformation.
+
+The "countProcessors" command (in zipper.tcl) will return the number
+of processors that an SGI machine has when queried with hinv.
+
+
+Bug fixes
+---------
+
+The ply package had a problem with reading in unrequested properties
+that were variable length lists.  This has been fixed.
+
+Remove_sliver_triangles had a subtle bug that prevented it from
+considering some of the last triangles in the list of triangles.  This
+has been fixed.
+
+The commands "transform" and "inv_transform" have been debugged.
+
+Zipper would occasionally crash when encountering meshes containing
+degenerate triangles.  The problem is fixed.
+
+
+Confidence
+----------
+
+We have changed the method of deciding confidence so that it has some
+adjustable parameters.  
+
+Our formula for the confidence parameter is ad hoc, but it has some
+reasonable motivations:
+
+ * surfaces at grazing angles to the scanner laser/sensor directions
+   are less reliably digitized
+ 
+ * surface points acquired near edges tend to be less reliable for
+   laser triangulation scanners using standard methods of imaged
+   peak detection.
+
+ * The lowering of confidence near edges makes for smoother blending
+   of the consensus geometry.
+
+The previous formula for confidence based on linear Cyberware scans
+was:
+
+   confidence = (Nz) * edge_confidence,   for Nz > 0
+                0,                        otherwise
+
+where Nz is the z-component of the normal vector, corresponding
+roughly to the laser direction, and edge_confidence is the
+downweighting due to closeness to an edge:
+		       ___
+		      |
+		      |  (1 + steps_from_edge) / (1 + max_steps),
+		      |			for steps_from_edge <= max_steps
+   edge_confidence =  |
+  		      |  1, 
+		      |			for steps_from_edge > max_steps
+                      |____
+
+where steps_from_edge is the distance a vertex is from the edge in
+terms of the shortest number of steps required to walk the mesh and
+arrive at an edge.  Max_steps is the threshold after which a vertex is
+considered to be too far from the edge to consider lowering its
+confidence.  Max_steps takes on the value 1, 2, 4, 8 corresponding to
+mesh resolutions 4, 3, 2, 1, respectively.  Note that the confidence
+does not go to zero at the edge.
+
+The new implementation defines confidence as follows:
+
+   confidence = [Nx * sin(conf_angle) + Nz * cos(conf_angle)] ^ conf_exponent
+                  * edge_confidence,
+                         for Nx * sin(conf_angle) + Nz * cos(conf_angle) > 0
+
+                0,       otherwise
+
+where Nx, NZ are the x- and z-components of the the surface normal and
+conf_angle is the angle for an arbitrary projection direction
+constrained to have no y-component.  Conf_angle is taken with respect
+to the z-axis within the x-z plane.  This is useful for referencing
+confidence with respect to, e.g., the sensor direction rather than the
+laser direction.  This parameter can be set with:
+
+   zipparam -conf_angle <float> 
+
+where the argument is in degrees (not radians).  Conf_exponent
+controls how quickly confidence falls off as the normal deviates from
+the direction specified by conf_angle.  It is set with:
+
+   zipparam -conf_exponent <float>
+
+Edge_confidence has also changed.  The new max_steps is now:
+
+    new_max_steps = Round(max_steps(resolution) * conf_edge_count_factor)
+
+Thus, the new max_steps is the old max steps increased by a factor of
+conf_edge_count_factor, giving control over how far the edge
+confidence reaches into the mesh.  This parameter can be set with:
+
+    zipparam -conf_edge_count_factor <float>
+
+In addition, the command:
+  
+    zipparam -conf_edge_zero <boolean> 
+
+can be used to force the confidence to go all the way to zero at the
+edges (when the argument is 1).
+  
+
+Miscellaneous adjustments
+-------------------------
+Zipper now accomodates the use of command line arguments when desiging
+zipper shell scripts.  The arguments will show up in the Tcl variables
+argc and argv.
+
+Zipper reads in obj_info strings from ply files and writes out these
+strings when the user saves the mesh to a ply file.
+
+The "mprint" command prints out the number of meshes, "Number of meshes: #".
+
+
+
+
+
+
+		  Changes to Zipper (v1.1 -> v1.11)
+
+			   Brian Curless
+			Stanford University
+			  April 21, 1995
+
+
+We fixed a bug: zipper would crash if a ply range grid file contained
+data in the last column.  This only affects people using range grid
+files, not ply files with vertex/face information or Cyberware
+(non-ply) files.  Also, we broke the "tcl_stuff.c" file into a bunch
+of smaller "tcl_*.c" files.
+
+
+
+
+		  Changes to Zipper (v1.0 -> v1.1)
+
+			   Brian Curless
+			Stanford University
+			  February 9, 1995
+
+
+We have made some changes to the zipper program since the release of
+version 1.0.  Most of these changes will be evident in the user
+interface and the addition of some new commands.  For those of you
+doing source development, we include below a listing of which source
+files have changed and how.
+
+We expect zipper to receive more attention over the summer.  If you
+would like to be informed of any changes to zipper, or you have any
+questions or comments, send mail to:
+
+		     zipper@graphics.stanford.edu
+
+
+
+
+Command line
+------------
+
+The -g option means that no graphics will be displayed (including
+widgets).
+
+The -f option allows for sourcing any file; works with *.conf files as
+well.
+
+
+User interface
+--------------
+
+* The font size is smaller.
+
+* The window that let's you move individual objects now associates a
+bunch more buttons with each object.  The columns of buttons are
+labeled:
+
+  Vis = Visible
+  Mv  = Move
+  Anc = Anchor (chooses mesh to be anchor)
+  Aln = Align  (chooses mesh to align to anchor)
+  Tgt = Target (chooses mesh to be target doing merge)
+  Mrg = Merge  (chooses mesh to merge into the target)
+
+* The "Update" button toggles whether or not to render the polygons
+after each alignment or edge eating step.
+
+* The "Orthographic" button toggles between orthographic and
+perspective projections.
+
+* The "Singlebuffer" button toggles between single- and double-
+buffering.
+
+* The "Shiny" button gives objects shininess while reducing the
+diffuse component.
+
+* I slowed down the default dragging speed, though it can be changed
+with the "speed" command.
+
+
+
+New and modified commands
+-------------------------
+
+* "zipparam" let's you set a bunch of zipper parameters.  I make no
+attempt here to define these parameters, and I know that things break
+when you change the zipper_resolution.
+Usage: zipparam -<option> <value>.  Prints options and values when no
+arg is given.
+
+* "align_error" computes the current alignment error.  Not quite
+working yet.
+
+* "align_step" permits a single alignment step.
+Usage: align_step or align_step [mesh] or align_step [anchor] [mesh]
+
+* "transform" applies one transform to another, returning the
+resulting transform.  
+Usage: transform x1 y1 z1 q10 q11 q12 q13  x2 y2 z2 q20 q21 q22 q23
+
+* "inv_transform" inverts the first transform and applies it to the
+second, returning the resulting transform.
+Usage: inv_transform x1 y1 z1 q10 q11 q12 q13  x2 y2 z2 q20 q21 q22 q23 
+
+* "next_align" declares the next scan to align. Future alignment
+without an argument will align this mesh against the "anchor" mesh
+(selected by the "anchor" command).
+Usage: next_align <mesh-name>
+
+* "next_merge" declares the next scan to merge.  Future edge eating
+and merging without an argument will eat and merge this mesh into the
+"target" mesh (selected by the "target" command).
+Usage: next_merge <mesh-name>
+
+* "rename_mesh" renames a mesh.
+Usage: rename_mesh <old-mesh-name> <new-mesh-name>
+
+* "remove_mesh" removes a mesh.
+Usage: rename_mesh <meshe>
+
+* "singlebuffer" permits toggling between singlebuffer and
+doublebuffering. 
+Usage: singlebuffer <on/off>
+
+* "orthographic" permits toggling between orthographic and
+perspective viewing. 
+Usage: orthographic <on/off>
+
+* "bmesh" and "bpoly" read either range grids or ply files (the
+commands are now interchangeable).
+
+* "qrotate" permits specification of quaternions.
+Usage: qrotate <mesh-name> q0 q1 q2 q3
+
+
+
+Changes to existing source
+--------------------------
+
+clip.c:
+
+verts_near_edges() now takes a minimum dot product as an argument.
+
+
+close_match.c: 
+
+six_degree_match() now takes an argument as to how many steps it
+performs.
+
+
+consensus.c:
+
+intersect_segment_with_mesh() now does unbiased jittering.
+
+
+draw.c:
+
+I now use choose the rendering resolution based on a triangle
+threshold (fixed at 5000 - should be variable - command line, possibly
+should discover the hardware and choose).  Does not account for
+slow-downs or speed-ups due to per vertex coloring or wiremesh
+rendering.
+
+Singlebuffering can be enabled at the command line
+
+Dragging interactions slowed down some.  Still controllable with the
+"speed" command.
+
+
+match_parallel.c:
+
+Can rename scans.  Does this work completely?
+
+
+mesh.c:
+
+clear_mesh() is a bit more thorough, but is it really complete?
+
+new_find_nearest() will let you search larger neighborhoods than
+nearest neighbor.
+
+is_near_edge() and is_vertex_near_edge() help to determine if the
+info in a near struct puts you near an edge.
+
+
+ply_wrapper.c:
+
+is_range_grid_file() helps to decide how to read a file
+
+Range grids are eroded by a user specified amount to reduce effects of
+edges.  It isn't quite right yet, as the range grids in general don't
+allow for more than one range point per line of sight.
+
+Confidence with spacetime data is a hack.  Currently, we compute a
+confidence value based on std dev and then multiply by the usual
+confidence.
+
+delete_ply_geom() actually deletes ply range data
+
+
+remove.c:
+
+eat_mesh_edges() has an additional argument to avoid eating away
+triangles that are too near the edge of the mesh.  This is not working
+well.
+
+
+tcl_stuff.c:
+
+setup_tcl() will allow for a no GUI version, but it still wants the
+display and tcl environment set up.  It also allows for a "-f
+<filename>" option that will execute a script; this option will accept
+*.conf files as well.
+
+tcl_zipparam() let's you set a bunch of zipper parameters.  
+Usage: zipparam -<option> <value>.  Prints options and values when no
+arg is given.
+
+tcl_align_error() computes the current alignment error.  Not quite
+working yet.
+
+tcl_align_step() permits a single alignment step.
+Usage: align_step or align_step [mesh] or align_step [anchor] [mesh]
+
+tcl_transform() applies one transform to another, returning the
+resulting transform.  
+Usage: transform x1 y1 z1 q10 q11 q12 q13 x2 y2 z2 q20 q21 q22 q23
+
+tcl_inv_transform() inverts the first transform and applies it to the
+second, returning the resulting transform.
+Usage: inv_transform x1 y1 z1 q10 q11 q12 q13  x2 y2 z2 q20 q21 q22 q23 
+
+tcl_next_align() declares the next scan to align. Future alignment
+without an argument will align this mesh against the "anchor" mesh
+(selected by the anchor command).
+Usage: next_align <mesh-name>
+
+tcl_next_merge() declares the next scan to merge.  Future edge eating
+and merging without an argument will eat and merge this mesh into the
+"target" mesh (selected by the target command).
+Usage: next_merge <mesh-name>
+
+tcl_rename_mesh() renames a mesh.
+Usage: rename_mesh <old-mesh-name> <new-mesh-name>
+
+tcl_set_singlebuffer() permits toggling between singlebuffer and
+doublebuffering. 
+Usage: singlebuffer <on/off>
+
+tcl_set_orthographic() permits toggling between orthographic and
+perspective viewing. 
+Usage: orthographic <on/off>
+
+tcl_read_ply_mesh() reads either range grids or ply files (bmesh and
+bpoly do the same thing now).
+
+tcl_rotate() permits specification of quaternions.
+Usage: qrotate <mesh-name> q0 q1 q2 q3
+
+
+
+zipper.c:
+
+Must call init_resolution_params() to set up a bunch of zipper params.
+
+
+zipper.tcl:
+
+The user interface has changed as described above.
+
+rename_mesh_buttons{} will rename buttons when a mesh is renamed
+
+align_pair{} aligns one mesh against another, stepping through
+specified levels doing specified numbers of iterations at each level
+
+align_step_pair{} is the same as align_pair{}, but it does the
+iterations at the granularity of 1 at a time, instead of 10 at a time
+
+alig_conf{} takes a configuration file, anchors the first mesh in the
+file and aligns the second, then anchors the second mesh and aligns
+the third, etc.  Iterations and levels are user specified.  Writes out
+intermediate results.
+
+merge_conf{} takes a configuration file, uses either the first mesh as
+a target or the mesh specified and merges in the remaining meshes in
+order.  Saves intermediates.
+
+cons_conf{} reads in zippered mesh and all of the configuration files
+to perform the confidence weighting.
+
+
+New source files
+----------------
+
+tcl_extra.c - more tcl commands.
+
+zipglobal.c,h - the beginnings of an attempt to coalesce the global
+variables into one place.
+
